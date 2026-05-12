@@ -1,350 +1,325 @@
-connection: "bq_data" # <-- Update this to your actual Looker connection name
+# ==============================================================================
+# RBC HACKATHON BASE MODEL
+# ==============================================================================
+# This model uses the default unenhanced base views directly pulled from
+# genaimarketingdemo.rbc_domain_views and wires the joins based on the
+# reference Entity Relationship diagram.
 
-# Include all the auto-generated view files from your project
+# Adjusted to match the connection name expected by your Looker environment
+connection: "bq_data"
+
+# Include all generated base views
 include: "/views/**/*.view.lkml"
-include: "/dashboards/**/*"
+include: "/dashboards/*"
 
-# -----------------------------------------------------------------------------
-# EXPLORE: CLIENT 360 & WEALTH HUB
-# -----------------------------------------------------------------------------
-explore: client_360 {
-  label: "Client 360° & Wealth Hub"
-  description: "Comprehensive view starting from the Client, traversing through their Accounts, Positions, Transactions, and Advisor relationships."
-  view_name: vw_client_core_profile
-  view_label: "1. Client Core Profile"
 
-  # ===========================================================================
-  # DOMAIN 1: CLIENT DETAILS (Joined on IPID)
-  # ===========================================================================
-
-  join: vw_client_tax_details {
-    view_label: "1. Client Tax & Planning"
-    type: left_outer
-    relationship: one_to_one
-    sql_on: ${vw_client_core_profile.ipid} = ${vw_client_tax_details.ipid} ;;
-  }
-
-  join: vw_client_planning_info {
-    view_label: "1. Client Tax & Planning"
-    type: left_outer
-    relationship: one_to_one
-    sql_on: ${vw_client_core_profile.ipid} = ${vw_client_planning_info.ipid} ;;
-  }
+# ==============================================================================
+# 1. CLIENT DOMAIN
+# ==============================================================================
+explore: vw_client_core_profile {
+  label: "Client Domain"
+  view_label: "Client Core Profile"
+  description: "Primary hub for exploring Client attributes, KYC, AML, and Planning."
 
   join: vw_client_address {
-    view_label: "1. Client Contact Info"
     type: left_outer
-    relationship: one_to_many
     sql_on: ${vw_client_core_profile.ipid} = ${vw_client_address.ipid} ;;
+    relationship: one_to_many
   }
 
   join: vw_client_email_addresses {
-    view_label: "1. Client Contact Info"
     type: left_outer
-    relationship: one_to_many
     sql_on: ${vw_client_core_profile.ipid} = ${vw_client_email_addresses.ipid} ;;
+    relationship: one_to_many
   }
 
   join: vw_client_phone_numbers {
-    view_label: "1. Client Contact Info"
     type: left_outer
-    relationship: one_to_many
     sql_on: ${vw_client_core_profile.ipid} = ${vw_client_phone_numbers.ipid} ;;
-  }
-
-  join: vw_client_employment_info {
-    view_label: "1. Client Demographics"
-    type: left_outer
-    relationship: one_to_one
-    sql_on: ${vw_client_core_profile.ipid} = ${vw_client_employment_info.ipid} ;;
-  }
-
-  join: vw_client_banking_information {
-    view_label: "1. Client Admin & Banking"
-    type: left_outer
-    relationship: one_to_one
-    sql_on: ${vw_client_core_profile.ipid} = ${vw_client_banking_information.ipid} ;;
-  }
-
-  join: vw_client_consents_and_preferences {
-    view_label: "1. Client Admin & Banking"
-    type: left_outer
-    relationship: one_to_one
-    sql_on: ${vw_client_core_profile.ipid} = ${vw_client_consents_and_preferences.ipid} ;;
-  }
-
-  join: vw_client_identifier {
-    view_label: "1. Client Admin & Banking"
-    type: left_outer
-    relationship: one_to_one
-    sql_on: ${vw_client_core_profile.ipid} = ${vw_client_identifier.ipid} ;;
-  }
-
-  join: vw_client_forms {
-    view_label: "1. Client Compliance"
-    type: left_outer
     relationship: one_to_many
-    sql_on: ${vw_client_core_profile.ipid} = ${vw_client_forms.ipid} ;;
   }
 
   join: vw_client_kyc {
-    view_label: "1. Client Compliance"
     type: left_outer
-    relationship: one_to_one
     sql_on: ${vw_client_core_profile.ipid} = ${vw_client_kyc.ipid} ;;
+    relationship: one_to_one
   }
 
   join: vw_client_aml {
-    view_label: "1. Client Compliance"
     type: left_outer
-    relationship: one_to_one
     sql_on: ${vw_client_core_profile.ipid} = ${vw_client_aml.ipid} ;;
+    relationship: one_to_one
+  }
+
+  join: vw_client_banking_information {
+    type: left_outer
+    sql_on: ${vw_client_core_profile.ipid} = ${vw_client_banking_information.ipid} ;;
+    relationship: one_to_one
+  }
+
+  join: vw_client_consents_and_preferences {
+    type: left_outer
+    sql_on: ${vw_client_core_profile.ipid} = ${vw_client_consents_and_preferences.ipid} ;;
+    relationship: one_to_one
   }
 
   join: vw_client_crs {
-    view_label: "1. Client Compliance"
     type: left_outer
-    relationship: one_to_one
     sql_on: ${vw_client_core_profile.ipid} = ${vw_client_crs.ipid} ;;
+    relationship: one_to_one
   }
 
   join: vw_client_fatca_qi {
-    view_label: "1. Client Compliance"
     type: left_outer
-    relationship: one_to_one
     sql_on: ${vw_client_core_profile.ipid} = ${vw_client_fatca_qi.ipid} ;;
+    relationship: one_to_one
+  }
+
+  join: vw_client_forms {
+    type: left_outer
+    sql_on: ${vw_client_core_profile.ipid} = ${vw_client_forms.ipid} ;;
+    relationship: one_to_many
+  }
+
+  join: vw_client_identifier {
+    type: left_outer
+    sql_on: ${vw_client_core_profile.ipid} = ${vw_client_identifier.ipid} ;;
+    relationship: one_to_one
+  }
+
+  join: vw_client_planning_info {
+    type: left_outer
+    sql_on: ${vw_client_core_profile.ipid} = ${vw_client_planning_info.ipid} ;;
+    relationship: one_to_one
   }
 
   join: vw_client_relationships {
-    view_label: "1. Client Relationships"
     type: left_outer
-    relationship: many_to_many
     sql_on: ${vw_client_core_profile.ipid} = ${vw_client_relationships.ipid} ;;
+    relationship: one_to_many
   }
 
-  # ===========================================================================
-  # DOMAIN 2: WEALTH PLANNING (Joined on IPID)
-  # ===========================================================================
-
-  join: vw_wealth_planning_history {
-    view_label: "2. Wealth Planning"
+  join: vw_client_tax_details {
     type: left_outer
-    relationship: one_to_many
+    sql_on: ${vw_client_core_profile.ipid} = ${vw_client_tax_details.ipid} ;;
+    relationship: one_to_one
+  }
+
+  join: vw_client_employment_info {
+    type: left_outer
+    sql_on: ${vw_client_core_profile.ipid} = ${vw_client_employment_info.ipid} ;;
+    relationship: one_to_one
+  }
+
+  # Wealth Planning Domain linked to Client
+  join: vw_wealth_planning_history {
+    type: left_outer
     sql_on: ${vw_client_core_profile.ipid} = ${vw_wealth_planning_history.ipid} ;;
+    relationship: one_to_many
   }
 
   join: vw_wealth_planning_opportunities {
-    view_label: "2. Wealth Planning"
     type: left_outer
-    relationship: one_to_many
     sql_on: ${vw_client_core_profile.ipid} = ${vw_wealth_planning_opportunities.ipid} ;;
-  }
-
-  # ===========================================================================
-  # DOMAIN 3: ACCOUNTS (Bridge -> IPID to ARNGID)
-  # ===========================================================================
-
-  join: vw_account_cli2_acc_rel {
-    view_label: "3. Account Ownership Bridge"
-    type: left_outer
     relationship: one_to_many
-    sql_on: ${vw_client_core_profile.ipid} = ${vw_account_cli2_acc_rel.ipid} ;;
+  }
+}
+
+
+# ==============================================================================
+# 2. ACCOUNT DOMAIN
+# ==============================================================================
+explore: vw_account_properties {
+  label: "Account Domain"
+  view_label: "Account Properties"
+  description: "Primary hub for exploring Account details, Performance, and associated Portfolios."
+
+  join: vw_account_address {
+    type: left_outer
+    sql_on: ${vw_account_properties.arngid} = ${vw_account_address.arngid} ;;
+    relationship: one_to_one
   }
 
-  join: vw_account_properties {
-    view_label: "3. Account Details"
+  # Bridge to Client (Commented out due to unknown view error)
+  # Looker's auto-generator may have named this view differently (e.g., vw_account_cli_2_acc_rel)
+  # or skipped generating it. Verify the view name in your files to re-enable.
+  # join: vw_account_cli2acc_rel {
+  #   type: left_outer
+  #   sql_on: ${vw_account_properties.arngid} = ${vw_account_cli2acc_rel.arngid} ;;
+  #   relationship: one_to_many
+  # }
+
+  # join: vw_client_core_profile {
+  #   type: left_outer
+  #   sql_on: ${vw_account_cli2acc_rel.ipid} = ${vw_client_core_profile.ipid} ;;
+  #   relationship: many_to_one
+  # }
+
+  join: vw_account_cashflow {
     type: left_outer
-    relationship: many_to_one
-    sql_on: ${vw_account_cli2_acc_rel.arngid} = ${vw_account_properties.arngid} ;;
+    sql_on: ${vw_account_properties.arngid} = ${vw_account_cashflow.arngid} ;;
+    relationship: one_to_one
   }
 
   join: vw_account_performance {
-    view_label: "3. Account Performance"
     type: left_outer
-    relationship: one_to_one
     sql_on: ${vw_account_properties.arngid} = ${vw_account_performance.arngid} ;;
-  }
-
-  join: vw_account_cashflow {
-    view_label: "3. Account Performance"
-    type: left_outer
     relationship: one_to_one
-    sql_on: ${vw_account_properties.arngid} = ${vw_account_cashflow.arngid} ;;
-  }
-
-  join: vw_account_address {
-    view_label: "3. Account Admin"
-    type: left_outer
-    relationship: one_to_one
-    sql_on: ${vw_account_properties.arngid} = ${vw_account_address.arngid} ;;
   }
 
   join: vw_account_identifiers {
-    view_label: "3. Account Admin"
     type: left_outer
-    relationship: one_to_one
     sql_on: ${vw_account_properties.arngid} = ${vw_account_identifiers.arngid} ;;
+    relationship: one_to_one
   }
 
   join: vw_account_kyc {
-    view_label: "3. Account Admin"
     type: left_outer
-    relationship: one_to_one
     sql_on: ${vw_account_properties.arngid} = ${vw_account_kyc.arngid} ;;
+    relationship: one_to_one
   }
 
   join: vw_account_payment_and_bank_info {
-    view_label: "3. Account Admin"
     type: left_outer
-    relationship: one_to_one
     sql_on: ${vw_account_properties.arngid} = ${vw_account_payment_and_bank_info.arngid} ;;
+    relationship: one_to_one
   }
 
   join: vw_account_sub_account_details {
-    view_label: "3. Account Details"
     type: left_outer
-    relationship: one_to_many
     sql_on: ${vw_account_properties.arngid} = ${vw_account_sub_account_details.arngid} ;;
-  }
-
-  # ===========================================================================
-  # DOMAIN 4: POSITIONS & SECURITIES (Joined on ACCT_NO_13D & INSTRUMENT_ID)
-  # ===========================================================================
-
-  join: vw_position_properties {
-    view_label: "4. Holdings & Positions"
-    type: left_outer
     relationship: one_to_many
-    sql_on: ${vw_account_properties.acct_no_8_d} = ${vw_position_properties.acct_no_13_d_join} ;;
   }
 
-  join: vw_securities_properties {
-    view_label: "4. Security Masters"
+  # Portfolio Domain mapped to Account
+  join: vw_portfolio_acc_grouping {
     type: left_outer
-    relationship: many_to_one
-    sql_on: ${vw_position_properties.instrument_id} = ${vw_securities_properties.instrument_id} ;;
-  }
-
-  join: vw_securities_identifiers {
-    view_label: "4. Security Masters"
-    type: left_outer
+    sql_on: ${vw_account_properties.arngid} = ${vw_portfolio_acc_grouping.arngid} ;;
     relationship: one_to_many
-    sql_on: ${vw_securities_properties.instrument_id} = ${vw_securities_identifiers.instrument_id} ;;
-  }
-
-  # ===========================================================================
-  # DOMAIN 5: TRANSACTIONS & TRANSFERS (Joined on ACCT_NO_13D / ARNGID)
-  # ===========================================================================
-
-  join: vw_transaction_properties {
-    view_label: "5. Transactions"
-    type: left_outer
-    relationship: one_to_many
-    sql_on: ${vw_account_properties.acct_no_8_d} = ${vw_transaction_properties.acct_no_13_d} ;;
-  }
-
-  # join: vw_transaction_sched_trans {
-  #   view_label: "5. Scheduled Transactions"
-  #   type: left_outer
-  #   relationship: one_to_many
-  #   sql_on: ${vw_account_properties.acct_no_8_d} = ${vw_transaction_sched_trans.acct_no_13d} ;;
-  # }
-
-  join: vw_transfer_properties {
-    view_label: "5. Transfers"
-    type: left_outer
-    relationship: one_to_many
-    sql_on: ${vw_account_properties.arngid} = ${vw_transfer_properties.source_arngid} ;;
-  }
-
-  join: vw_internal_transfer_match {
-    view_label: "5. Transfers"
-    type: left_outer
-    relationship: one_to_one
-    sql_on: ${vw_transfer_properties.transfer_id} = ${vw_internal_transfer_match.transfer_id} ;;
-  }
-
-  # ===========================================================================
-  # DOMAIN 6: PORTFOLIO (Joined on ARNGID or PORT_ID)
-  # ===========================================================================
-
-  join: vw_portfolio_properties {
-    view_label: "6. Portfolios"
-    type: left_outer
-    relationship: one_to_one
-    sql_on: ${vw_account_properties.arngid} = ${vw_portfolio_properties.arngid} ;;
   }
 
   join: vw_portfolio_ips {
-    view_label: "6. Portfolios"
     type: left_outer
-    relationship: one_to_one
     sql_on: ${vw_account_properties.arngid} = ${vw_portfolio_ips.arngid} ;;
+    relationship: one_to_one
   }
 
-  join: vw_portfolio_acc_grouping {
-    view_label: "6. Portfolios"
+  join: vw_portfolio_properties {
     type: left_outer
-    relationship: one_to_many
-    sql_on: ${vw_account_properties.arngid} = ${vw_portfolio_acc_grouping.arngid} ;;
+    sql_on: ${vw_account_properties.arngid} = ${vw_portfolio_properties.arngid} ;;
+    relationship: one_to_one
   }
 
+  # Link VW_PORTFOLIO_PERF_METRIC via derived PORT_ID
   join: vw_portfolio_perf_metric {
-    view_label: "6. Portfolio Performance"
     type: left_outer
+    sql_on: CONCAT('PORT', ${vw_account_properties.arngid}) = ${vw_portfolio_perf_metric.port_id} ;;
     relationship: one_to_one
-    # Data dictionary explicit rule: PORT_ID = 'PORT' + ARNGID
-    sql_on: ${vw_portfolio_perf_metric.port_id} = CONCAT('PORT', ${vw_account_properties.arngid}) ;;
   }
 
-  # ===========================================================================
-  # DOMAIN 7: ORGANISATION & ADVISORS (Joined on IA_CODE to REPCODE)
-  # ===========================================================================
-
-  join: vw_org_repcode_profile {
-    view_label: "7. Advisor (Rep) Profile"
-    type: left_outer
-    relationship: many_to_one
-    # Data dictionary rule: IA_CODE links to REPCODE
-    sql_on: ${vw_account_properties.ia_code} = ${vw_org_repcode_profile.repcode} ;;
-  }
-
-  join: vw_org_repcode_employees {
-    view_label: "7. Advisor (Rep) Profile"
-    type: left_outer
-    relationship: one_to_many
-    sql_on: ${vw_org_repcode_profile.repcode} = ${vw_org_repcode_employees.repcode} ;;
-  }
-
-  join: vw_org_team_owners_repcodes {
-    view_label: "7. Org Teams"
-    type: left_outer
-    relationship: many_to_many
-    sql_on: ${vw_org_repcode_profile.repcode} = ${vw_org_team_owners_repcodes.repcode} ;;
-  }
-
-  join: vw_org_team_profile {
-    view_label: "7. Org Teams"
-    type: left_outer
-    relationship: many_to_one
-    sql_on: ${vw_org_team_owners_repcodes.team_id} = ${vw_org_team_profile.team_id} ;;
-  }
-
-  # ===========================================================================
-  # DOMAIN 8: FEES & COMMISSIONS
-  # ===========================================================================
-
+  # Fees & Commissions Domain
   join: vw_feecomm_acct_fee_rate {
-    view_label: "8. Fees & Commissions"
     type: left_outer
-    relationship: one_to_one
     sql_on: ${vw_account_properties.arngid} = ${vw_feecomm_acct_fee_rate.arngid} ;;
+    relationship: one_to_one
   }
 
   join: vw_feecomm_schedules {
-    view_label: "8. Fees & Commissions"
     type: left_outer
-    relationship: many_to_one
     sql_on: ${vw_feecomm_acct_fee_rate.schedule_id} = ${vw_feecomm_schedules.schedule_id} ;;
+    relationship: many_to_one
+  }
+}
+
+
+# ==============================================================================
+# 3. SECURITIES DOMAIN
+# ==============================================================================
+explore: vw_securities_properties {
+  label: "Securities Domain"
+  view_label: "Securities Properties"
+  description: "Core table for Security and Instrument profiles."
+
+  join: vw_securities_identifiers {
+    type: left_outer
+    sql_on: ${vw_securities_properties.instrument_id} = ${vw_securities_identifiers.instrument_id} ;;
+    relationship: one_to_many
+  }
+}
+
+
+# ==============================================================================
+# 4. POSITION DOMAIN
+# ==============================================================================
+explore: vw_position_properties {
+  label: "Position Domain"
+  view_label: "Position Properties"
+  description: "Brings together Account and Security facts for active holdings."
+
+  join: vw_securities_properties {
+    type: left_outer
+    sql_on: ${vw_position_properties.instrument_id} = ${vw_securities_properties.instrument_id} ;;
+    relationship: many_to_one
+  }
+}
+
+
+# ==============================================================================
+# 5. TRANSACTION DOMAIN
+# ==============================================================================
+explore: vw_transaction_properties {
+  label: "Transaction Domain"
+  view_label: "Transaction Properties"
+  description: "Historical transaction logs bridging Accounts to Securities."
+
+  join: vw_securities_properties {
+    type: left_outer
+    sql_on: ${vw_transaction_properties.instrument_id} = ${vw_securities_properties.instrument_id} ;;
+    relationship: many_to_one
+  }
+}
+
+# Standalone explores for Transaction Schedules and Transfers
+explore: vw_transaction_sched_trans {
+  label: "Scheduled Transactions"
+  hidden: yes
+}
+
+explore: vw_transfer_properties {
+  label: "Transfer Properties"
+
+  join: vw_internal_transfer_match {
+    type: left_outer
+    sql_on: ${vw_transfer_properties.source_arngid} = ${vw_internal_transfer_match.source_arngid}
+      AND ${vw_transfer_properties.dest_arngid} = ${vw_internal_transfer_match.dest_arngid} ;;
+    relationship: one_to_one
+  }
+}
+
+
+# ==============================================================================
+# 6. ORGANISATION DOMAIN
+# ==============================================================================
+explore: vw_org_repcode_profile {
+  label: "Organisation Domain"
+  view_label: "Organisation Repcode Profile"
+  description: "Investment Advisor and Organizational structure mappings."
+
+  join: vw_org_repcode_employees {
+    type: left_outer
+    sql_on: ${vw_org_repcode_profile.repcode} = ${vw_org_repcode_employees.repcode} ;;
+    relationship: one_to_many
+  }
+
+  join: vw_org_team_owners_repcodes {
+    type: left_outer
+    sql_on: ${vw_org_repcode_profile.repcode} = ${vw_org_team_owners_repcodes.repcode} ;;
+    relationship: many_to_many
+  }
+
+  join: vw_org_team_profile {
+    type: left_outer
+    sql_on: ${vw_org_team_owners_repcodes.team_id} = ${vw_org_team_profile.team_id} ;;
+    relationship: many_to_one
   }
 }
