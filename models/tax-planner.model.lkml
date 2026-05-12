@@ -2,6 +2,7 @@ connection: "bq_data" # <-- Update this to your actual Looker connection name
 
 # Include all the auto-generated view files from your project
 include: "/views/**/*.view.lkml"
+include: "/dashboards/**/*"
 
 # -----------------------------------------------------------------------------
 # EXPLORE: CLIENT 360 & WEALTH HUB
